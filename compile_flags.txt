@@ -1,0 +1,7 @@
+-I/Library/Developer/CommandLineTools/SDKs/MacOSX12.3.sdk/usr/include/c++/v1
+-I/Library/Developer/CommandLineTools/usr/lib/clang/13.0.0/include
+-I/Library/Developer/CommandLineTools/SDKs/MacOSX12.3.sdk/usr/include
+-I/Library/Developer/CommandLineTools/usr/include
+-I/Library/Developer/CommandLineTools/SDKs/MacOSX12.3.sdk/System/Library/Frameworks
+-I/Users/brunobrett/Desktop/CPP/FirstWorkspace/a5_proto
+-std=c++17
