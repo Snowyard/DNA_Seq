@@ -1,3 +1,12 @@
+//
+//  CSCI 160
+//  Assignment 5
+//  main.cpp
+//
+//  Created by snowyard on 2022-11-25.
+//  Copyright © 2022 snowyard. All rights reserved.
+//
+
 #include <iostream>
 #include <cstdio>
 #include <cstring>
@@ -5,85 +14,132 @@
 
 using namespace std;
 
-//prototypes
-void printFasta(struct fasta f);
-int getMax(int a, int b);
-int getMin(int a, int b);
+// Struct Prototypes.
+// Contains the number of each nucleotide and the sequence name.
+struct fasta {
+    char name[70];
+    int a, c, g, t;
 
-//struct
-struct fasta
-{
-        char name[70] = "";
-	int a = 0, c = 0, g = 0, t = 0;
+    // Constructor.
+    fasta() : name(""), a(0), c(0), g(0), t(0) {}
 };
 
-int main()
-{
+// Function Prototypes.
+// Outputs the DNA details in FASTA format.
+void printFasta(struct fasta f);
+// Returns the maximum integer of two values.
+int getMax(int a, int b);
+// Returns the minimum integer of two values.
+int getMin(int a, int b);
+
+int main() {
+    // Variable declarations.
+    // Array of DNA structs.
     fasta DNA_STRUCTS[20];
-    FILE* fpin; // file declaration
-    
-    cout << "Enter filename : "; // user enters filename
+    int i = 0, j = -1;
+    // The character placeholder, letter by letter.
+    char c;
+    // Whether the text line is the DNA sequence.
+    bool isDNA = false;
+    // The length of the sequence.
+    int sequenceLength = 0;
+    // The file name placeholder.
     char filename[20];
+	
+    // File pointer stream.
+    FILE* fpin;
+    
+    // Ask for input.
+    cout << "Enter filename: ";
     cin >> filename;
     
-    int j = -1; 
-    int i = 0; 
-    char c; // letter by letter
-    bool isDNA = 0; // detected DNA sequence
-    int sequenceLength = 0;
-    
-    fpin = fopen(filename, "r"); // read file
-    if(!fpin) { // file error case
-        cout << "\nERROR! Could not open file " << filename;
-    } else { // if file is opened
-        while(!feof(fpin)) { // while running through file
+    // Open the file in read-mode and assign it to the file pointer stream.
+    fpin = fopen(filename, "r");
+	
+    // If there is an error opening the file.
+    if(!fpin) { 
+        cout << endl << "ERROR! Could not open file " << filename;
+    } 
+    // If the file was opened successfully.
+    else {
+	// While not at the end of the file, iterate through each character.
+        while(!feof(fpin)) {
+	    // Get the character in question from the file.
             c = fgetc(fpin);
-            if(c == '>') { // when sequence name is encountered, isDNA is false
-                isDNA = 0;
-                fgets(DNA_STRUCTS[i].name, 69, fpin); // gets name
+		
+	    // If the character is '>', the next set of characters until '\n' or '\r' is part of the sequence name.
+            if(c == '>') {
+		// State that the text line in question is not a DNA sequence, but is rather a sequence name.
+                isDNA = false;
+		
+		// Get the string from the rest of the line - is the sequence name.
+                fgets(DNA_STRUCTS[i].name, 69, fpin);
+		    
                 i++;
                 j++;
             }
-            else if(c == '\n' || c == '\r') { // when line break, isDNA is true
-                isDNA = 1;
+	    // If the character is a newline character. Ignore and break to next line.
+            else if(c == '\n' || c == '\r') {
+		// Reset whether the text line in question is a DNA sequence or a sequence name.
+                isDNA = true;
             }
+	    // If the character is anything else.
             else {
+		// If the character belongs to the DNA sequence.
                 if(isDNA) {
-                    if(c == 'A' || c == 'a' || c == 'C' || c == 'c' || c == 'G' || c == 'g' || c == 'T' || c == 't')
-                        sequenceLength++; // counts alphabet 
-                    
-                    if(c == 'A' || c == 'a')
-                        DNA_STRUCTS[j].a++;
-                    else if (c == 'C' || c == 'c')
-                        DNA_STRUCTS[j].c++;
-                    else if (c == 'G' || c == 'g')
-                        DNA_STRUCTS[j].g++;
-                    else if (c == 'T' || c == 't')
-                        DNA_STRUCTS[j].t++;
+		    switch (c) {
+			case 'a':
+			case 'A':
+			    sequenceLength++;
+			    DNA_STRUCTS[j].a++;
+			    break;
+			case 'c':
+			case 'C':
+			    sequenceLength++;
+			    DNA_STRUCTS[j].c++;
+			    break;
+			case 'g':
+			case 'G':
+			    sequenceLength++;
+			    DNA_STRUCTS[j].g++;
+			    break;
+			case 't':
+			case 'T':
+			    sequenceLength++;
+			    DNA_STRUCTS[j].t++;
+			    break;
+			default:
+			    break;
+		    }
                 }
             }
         }
         
-        for(int i=0; i < 10; i++) // Loops through struct array and prints them out
-            printFasta(DNA_STRUCTS[i]);
+	// For each DNA structure.
+        for(int i=0; i < 10; i++) {
+	    printFasta(DNA_STRUCTS[i]);
+	}
         
-        cout << "*******************************\n"
+	// Print the summary.
+        cout << string(31, '*') << endl
          << "Report for file " << filename << endl
-         << "Number of sequences: " << i 
-         << "\nTotal sequence length: " << sequenceLength
-         << "\nMaximum sequence length: "
-         << "\nMinimum sequence length: "
-         << "\n*******************************";
+         << "Number of sequences: " << i << endl
+         << "Total sequence length: " << sequenceLength << endl
+         << "Maximum sequence length: " << endl
+         << "Minimum sequence length: " << endl
+         << string(31, '*') << endl;
     }
 }
 
 void printFasta(struct fasta f) {
-    if(strlen(f.name) > 2) { // if struct has no name, do not display
-        cout << "\n>" << f.name << "\n"
-             << "Length: " 
-             << "A: " << f.a << "\n"
-             << "C: " << f.c << "\n"
-             << "G: " << f.g << "\n"
-             << "T: " << f.t << "\n";
+    // If the length of the sequence name is longer than 2 characters.
+    if(strlen(f.name) > 2) {
+	// Print the sequence name and number of nucleotides.
+        cout << endl << ">" << f.name << endl
+             << "Length: " << endl
+             << "A: " << f.a << endl
+             << "C: " << f.c << endl
+             << "G: " << f.g << endl
+             << "T: " << f.t << endl
     }
 }
